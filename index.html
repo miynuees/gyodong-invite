@@ -106,7 +106,7 @@ h1 .hl{background:linear-gradient(transparent 58%, #ffd2e5 58%); padding:0 3px;}
 .ctrl-btn{flex:1; border:none; padding:10px 0; border-radius:16px; font-family:inherit;
   font-size:16px; font-weight:800; color:#8a5d75; cursor:pointer;
   background:linear-gradient(160deg,#fff,#fdeef3); border:1.5px solid #f5d9e4;
-  box-shadow:0 3px 8px rgba(220,130,165,.15); user-select:none; touch-action:manipulation;
+  box-shadow:0 3px 8px rgba(220,130,165,.15); user-select:none; touch-action:none;
   transition:transform .1s; -webkit-user-drag:none; -webkit-touch-callout:none;}
 .ctrl-btn:active{transform:scale(.94); background:#f5d9e4;}
 .ctrl-btn.ctrl-jump{color:#fff; background:linear-gradient(135deg,var(--peach),var(--peach-deep));
@@ -486,8 +486,12 @@ function jump(){
 viewport.addEventListener('pointerdown', jump);
 
 function bindHold(el, onDown, onUp){
-  el.addEventListener('pointerdown', e=>{ e.preventDefault(); e.stopPropagation(); onDown(); });
-  ['pointerup','pointerleave','pointercancel'].forEach(ev=>el.addEventListener(ev, onUp));
+  el.addEventListener('pointerdown', e=>{
+    e.preventDefault(); e.stopPropagation();
+    try{ el.setPointerCapture(e.pointerId); }catch(err){}
+    onDown();
+  });
+  ['pointerup','pointercancel'].forEach(ev=>el.addEventListener(ev, onUp));
 }
 bindHold(document.getElementById('btnLeft'), ()=>keys.left=true, ()=>keys.left=false);
 bindHold(document.getElementById('btnRight'), ()=>keys.right=true, ()=>keys.right=false);
